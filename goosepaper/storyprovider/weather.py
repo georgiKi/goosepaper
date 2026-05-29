@@ -18,7 +18,7 @@ class MetaWeatherStoryProvider(StoryProvider):
     def CtoF(self, temp: float) -> float:
         return (temp * 9 / 5) + 32
 
-    def get_stories(self, limit: int = 1, **kwargs) -> List[Story]:
+    def get_stories(self) -> List[Story]:
         weatherReq = requests.get(
             f"https://www.metaweather.com/api/location/{self.woe}/"
         ).json()
@@ -336,7 +336,7 @@ class OpenMeteoWeatherStoryProvider(StoryProvider):
             return f"{hour}{suffix}"
         return f"{hour}:{point_time.minute:02d}{suffix}"
 
-    def get_stories(self, limit: int = 1, **kwargs) -> List[Story]:
+    def get_stories(self) -> List[Story]:
         response = requests.get(
             "https://api.open-meteo.com/v1/forecast",
             params=self._build_params(),

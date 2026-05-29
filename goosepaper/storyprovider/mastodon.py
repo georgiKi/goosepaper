@@ -23,9 +23,9 @@ class MastodonStoryProvider(StoryProvider):
             else None
         )
 
-    def get_stories(self, limit: int = 5, **kwargs) -> List[Story]:
+    def get_stories(self) -> List[Story]:
         feed = feedparser.parse(self.feed_url)
-        limit = min(limit, self.limit, len(feed.entries))
+        limit = min(self.limit, len(feed.entries))
         if limit == 0:
             print(f"Sad honk :/ No entries found for feed {self.feed_url}...")
 

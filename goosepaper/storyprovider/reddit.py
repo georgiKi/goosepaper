@@ -21,7 +21,7 @@ class RedditHeadlineStoryProvider(StoryProvider):
         subreddit = subreddit[2:] if subreddit.startswith("r/") else subreddit
         self.subreddit = subreddit
 
-    def get_stories(self, limit: int = 20, **kwargs) -> List[Story]:
+    def get_stories(self) -> List[Story]:
         response = requests.get(
             f"https://www.reddit.com/r/{self.subreddit}.rss",
             headers={"User-Agent": f"goosepaper/{__version__}"},
@@ -29,7 +29,7 @@ class RedditHeadlineStoryProvider(StoryProvider):
         )
         response.raise_for_status()
         feed = feedparser.parse(response.content)
-        limit = min(self.limit, len(feed.entries), limit)
+        limit = min(self.limit, len(feed.entries))
         stories = []
         for entry in feed.entries:
             try:

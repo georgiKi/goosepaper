@@ -69,7 +69,7 @@ def test_rss_provider_prefers_embedded_feed_content(monkeypatch):
     monkeypatch.setattr(rss.requests, "get", fail_get)
 
     provider = rss.RSSFeedStoryProvider("https://example.com/feed.xml")
-    stories = provider.get_stories(limit=1)
+    stories = provider.get_stories()
 
     assert stories[0].headline == "Feed title"
     assert stories[0].body_html == "<p>Embedded story body</p>"
@@ -103,7 +103,7 @@ def test_rss_provider_summary_mode_uses_feed_summary(monkeypatch):
         "https://example.com/feed.xml",
         body_source="summary",
     )
-    stories = provider.get_stories(limit=1)
+    stories = provider.get_stories()
 
     assert stories[0].body_html == "<p>Feed summary only</p>"
 
@@ -137,7 +137,7 @@ def test_rss_provider_content_mode_uses_feed_content_without_article_fetch(
         "https://example.com/feed.xml",
         body_source="content",
     )
-    stories = provider.get_stories(limit=1)
+    stories = provider.get_stories()
 
     assert stories[0].body_html == "<p>Embedded story body</p>"
 
@@ -160,7 +160,7 @@ def test_rss_provider_content_mode_falls_back_to_summary(monkeypatch):
         "https://example.com/feed.xml",
         body_source="content",
     )
-    stories = provider.get_stories(limit=1)
+    stories = provider.get_stories()
 
     assert stories[0].body_html == "<p>Feed summary only</p>"
 
@@ -195,7 +195,7 @@ def test_rss_provider_passes_text_to_readability(monkeypatch):
     monkeypatch.setattr(rss, "Document", FakeDocument)
 
     provider = rss.RSSFeedStoryProvider("https://example.com/feed.xml")
-    stories = provider.get_stories(limit=1)
+    stories = provider.get_stories()
 
     assert isinstance(seen["html"], str)
     assert stories[0].headline == "Readable title"
@@ -244,7 +244,7 @@ def test_rss_provider_article_mode_fetches_article_even_when_feed_has_content(
         "https://example.com/feed.xml",
         body_source="article",
     )
-    stories = provider.get_stories(limit=1)
+    stories = provider.get_stories()
 
     assert seen["requests"] == 1
     assert stories[0].headline == "Readable title"
@@ -269,7 +269,7 @@ def test_rss_provider_falls_back_to_feed_summary_when_readability_fails(monkeypa
     monkeypatch.setattr(rss, "Document", BrokenDocument)
 
     provider = rss.RSSFeedStoryProvider("https://example.com/feed.xml")
-    stories = provider.get_stories(limit=1)
+    stories = provider.get_stories()
 
     assert stories[0].headline == "Feed title"
     assert stories[0].body_html == "<p>Feed summary</p>"
@@ -298,7 +298,7 @@ def test_rss_provider_can_hide_all_bylines(monkeypatch):
         "https://example.com/feed.xml",
         byline="none",
     )
-    stories = provider.get_stories(limit=2)
+    stories = provider.get_stories()
 
     assert stories[0].byline is None
     assert stories[1].byline is None
@@ -326,7 +326,7 @@ def test_rss_provider_can_show_only_first_byline(monkeypatch):
         "https://example.com/feed.xml",
         byline="first",
     )
-    stories = provider.get_stories(limit=2)
+    stories = provider.get_stories()
 
     assert stories[0].byline == "example.com"
     assert stories[1].byline is None

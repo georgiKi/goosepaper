@@ -35,13 +35,13 @@ class BlueskyStoryProvider(StoryProvider):
             else None
         )
 
-    def get_stories(self, limit: int = 5, **kwargs) -> List[Story]:
+    def get_stories(self) -> List[Story]:
         response = requests.get(
             self.feed_url,
             params={
                 "actor": self.username,
                 "filter": self.feed_filter,
-                "limit": min(self.limit, limit),
+                "limit": self.limit,
             },
             headers={"User-Agent": f"goosepaper/{__version__}"},
             timeout=20,
@@ -58,7 +58,7 @@ class BlueskyStoryProvider(StoryProvider):
                 continue
 
             stories.append(story)
-            if len(stories) >= min(self.limit, limit):
+            if len(stories) >= self.limit:
                 break
 
         return stories
