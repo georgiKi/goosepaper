@@ -1,5 +1,11 @@
 # CHANGELOG
 
+### **v0.8.1** (May 29, 2026)
+
+-   Fixes
+    -   Updated the reMarkable upload dependency to require `remarkapy>=0.2.2,<0.3`. (#109)
+    -   Replaced hard-coded recency timestamps in the Bluesky and Reddit provider tests with runtime-relative dates so the suite does not fail as time passes. (#110)
+
 ### **v0.8.0** (April 23, 2026)
 
 > This release is a big and (eek) backwards-INcompatible one. But I think this results in a much cleaner repository. Goosepaper was born six years ago, and a lot has changed in Python and in the reMarkable ecosystem since then. This release is a big step towards modernizing the codebase and making it easier to maintain and extend in the future.
