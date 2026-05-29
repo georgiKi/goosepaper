@@ -5,6 +5,14 @@ from . import reddit
 from ..util import PlacementPreference
 
 
+def _updated_parsed(*, days_ago=0, hours_ago=0):
+    return (
+        (datetime.datetime.now() - datetime.timedelta(days=days_ago, hours=hours_ago))
+        .replace(microsecond=0)
+        .timetuple()
+    )
+
+
 def _feed_entry(
     *,
     title="A reddit post",
@@ -12,14 +20,7 @@ def _feed_entry(
     updated_parsed=None,
 ):
     if updated_parsed is None:
-        updated_parsed = datetime.datetime(
-            2026,
-            4,
-            24,
-            10,
-            30,
-            0,
-        ).timetuple()
+        updated_parsed = _updated_parsed(days_ago=1)
     return SimpleNamespace(
         title=title,
         author=author,
@@ -80,16 +81,12 @@ def test_reddit_provider_filters_old_entries(monkeypatch):
             entries=[
                 _feed_entry(
                     title="Old story",
-                    updated_parsed=datetime.datetime(
-                        2020,
-                        1,
-                        1,
-                        0,
-                        0,
-                        0,
-                    ).timetuple(),
+                    updated_parsed=_updated_parsed(days_ago=365),
                 ),
-                _feed_entry(title="Recent story"),
+                _feed_entry(
+                    title="Recent story",
+                    updated_parsed=_updated_parsed(days_ago=1),
+                ),
             ]
         ),
     )

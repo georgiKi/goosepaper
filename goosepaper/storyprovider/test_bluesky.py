@@ -1,3 +1,5 @@
+import datetime
+
 from . import bluesky
 
 
@@ -10,6 +12,22 @@ class _FakeResponse:
 
     def json(self):
         return self._payload
+
+
+def _utc_timestamp(*, days_ago=0, hours_ago=0, minutes_ago=0):
+    return (
+        (
+            datetime.datetime.now(datetime.timezone.utc)
+            - datetime.timedelta(
+                days=days_ago,
+                hours=hours_ago,
+                minutes=minutes_ago,
+            )
+        )
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 
 def _feed_item(
@@ -121,11 +139,11 @@ def test_bluesky_provider_honors_since_days_ago(monkeypatch):
                 "feed": [
                     _feed_item(
                         text="Old post",
-                        created_at="2020-01-01T00:00:00Z",
+                        created_at=_utc_timestamp(days_ago=365),
                     ),
                     _feed_item(
                         text="Recent post",
-                        created_at="2026-04-24T15:30:00Z",
+                        created_at=_utc_timestamp(days_ago=1),
                     ),
                 ]
             }
