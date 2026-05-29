@@ -28,7 +28,7 @@ dependencies = [
   "weasyprint",
   "ebooklib",
   "readability-lxml",
-  "remarkapy>=0.2.1,<0.3",
+  "remarkapy>=0.2.2,<0.3",
 ]
 
 [project.scripts]
