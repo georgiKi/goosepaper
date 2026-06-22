@@ -311,6 +311,68 @@ def test_load_paper_config_accepts_bluesky_source():
         assert config.sources[0].options["include_replies"] is True
 
 
+def test_load_paper_config_accepts_readwise_source():
+    with _TempWorkspace() as tmp_path:
+        config_path = tmp_path / "paper.json"
+        _write_json(
+            config_path,
+            {
+                "version": 2,
+                "paper": {"style": "FifthAvenue"},
+                "sources": [
+                    {
+                        "type": "readwise",
+                        "token_env": "GOOSEPAPER_TEST_READWISE_TOKEN",
+                        "limit": 3,
+                        "since_days_ago": 2,
+                        "location": "later",
+                        "category": "article",
+                        "tags": ["morning", "longform"],
+                        "body_source": "text",
+                    }
+                ],
+            },
+        )
+
+        config = load_paper_config(config_path)
+
+        assert config.sources[0].type == "readwise"
+        assert (
+            config.sources[0].options["token_env"]
+            == "GOOSEPAPER_TEST_READWISE_TOKEN"
+        )
+        assert config.sources[0].options["limit"] == 3
+        assert config.sources[0].options["since_days_ago"] == 2
+        assert config.sources[0].options["location"] == "later"
+        assert config.sources[0].options["category"] == "article"
+        assert config.sources[0].options["tags"] == ["morning", "longform"]
+        assert config.sources[0].options["body_source"] == "text"
+
+
+def test_load_paper_config_accepts_readwise_null_filters():
+    with _TempWorkspace() as tmp_path:
+        config_path = tmp_path / "paper.json"
+        _write_json(
+            config_path,
+            {
+                "version": 2,
+                "paper": {"style": "FifthAvenue"},
+                "sources": [
+                    {
+                        "type": "readwise",
+                        "location": None,
+                        "category": None,
+                    }
+                ],
+            },
+        )
+
+        config = load_paper_config(config_path)
+
+        assert config.sources[0].options["location"] is None
+        assert config.sources[0].options["category"] is None
+
+
 def test_load_paper_config_accepts_weather_breakdown_fields():
     with _TempWorkspace() as tmp_path:
         config_path = tmp_path / "paper.json"
@@ -393,6 +455,52 @@ def test_load_paper_config_rejects_invalid_bluesky_include_replies():
         _assert_config_error(
             lambda: load_paper_config(config_path),
             "include_replies must be true or false",
+        )
+
+
+def test_load_paper_config_rejects_invalid_readwise_body_source():
+    with _TempWorkspace() as tmp_path:
+        config_path = tmp_path / "paper.json"
+        _write_json(
+            config_path,
+            {
+                "version": 2,
+                "paper": {"style": "FifthAvenue"},
+                "sources": [
+                    {
+                        "type": "readwise",
+                        "body_source": "rendered",
+                    }
+                ],
+            },
+        )
+
+        _assert_config_error(
+            lambda: load_paper_config(config_path),
+            'body_source must be one of "text", "html", or "summary"',
+        )
+
+
+def test_load_paper_config_rejects_invalid_readwise_tags():
+    with _TempWorkspace() as tmp_path:
+        config_path = tmp_path / "paper.json"
+        _write_json(
+            config_path,
+            {
+                "version": 2,
+                "paper": {"style": "FifthAvenue"},
+                "sources": [
+                    {
+                        "type": "readwise",
+                        "tags": ["morning", ""],
+                    }
+                ],
+            },
+        )
+
+        _assert_config_error(
+            lambda: load_paper_config(config_path),
+            "tags must be an array of non-empty strings",
         )
 
 

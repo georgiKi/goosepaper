@@ -103,6 +103,11 @@ def construct_story_providers_from_source_configs(source_configs):
             "BlueskyStoryProvider",
             lambda options: dict(options),
         ),
+        "readwise": (
+            "goosepaper.storyprovider.readwise",
+            "ReadwiseReaderStoryProvider",
+            lambda options: dict(options),
+        ),
         "weather": (
             "goosepaper.storyprovider.weather",
             "OpenMeteoWeatherStoryProvider",
