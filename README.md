@@ -25,9 +25,9 @@ goosepaper is a utility that delivers a daily newspaper to your remarkable table
 
 you can include RSS feeds, Mastodon feeds, news articles, wikipedia articles-of-the-day, weather, and more. I read it when I wake up so that I can feel anxious without having to get my phone.
 
-## survey
+## public instance
 
-**[New!]** In response to feedback, I'm collecting anonymous survey responses. Do you want a goosepaper delivered but without requiring any code? Please [let me know your thoughts!](https://forms.gle/t3PUp2TxDQnzzs8x9)
+https://goosepaper.jordan.matelsky.com/
 
 ## get started with docker
 
