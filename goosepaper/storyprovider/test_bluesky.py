@@ -67,8 +67,8 @@ def test_bluesky_provider_uses_public_author_feed(monkeypatch):
 
     monkeypatch.setattr(bluesky.requests, "get", fake_get)
 
-    provider = bluesky.BlueskyStoryProvider("jordan.matelsky.com", limit=4)
-    stories = provider.get_stories(limit=2)
+    provider = bluesky.BlueskyStoryProvider("jordan.matelsky.com", limit=2)
+    stories = provider.get_stories()
 
     assert seen["url"] == "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed"
     assert seen["params"] == {
@@ -99,7 +99,7 @@ def test_bluesky_provider_can_exclude_replies(monkeypatch):
         "jordan.matelsky.com",
         include_replies=False,
     )
-    stories = provider.get_stories(limit=2)
+    stories = provider.get_stories()
 
     assert seen["params"]["filter"] == "posts_no_replies"
     assert len(stories) == 1
@@ -123,7 +123,7 @@ def test_bluesky_provider_skips_reposts(monkeypatch):
     )
 
     provider = bluesky.BlueskyStoryProvider("jordan.matelsky.com")
-    stories = provider.get_stories(limit=5)
+    stories = provider.get_stories()
 
     assert len(stories) == 1
     assert stories[0].body_html == "<p>An original post</p>"
@@ -154,7 +154,7 @@ def test_bluesky_provider_honors_since_days_ago(monkeypatch):
         "infinitescream.bsky.social",
         since_days_ago=30,
     )
-    stories = provider.get_stories(limit=5)
+    stories = provider.get_stories()
 
     assert len(stories) == 1
     assert stories[0].body_html == "<p>Recent post</p>"

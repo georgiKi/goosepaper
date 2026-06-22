@@ -55,7 +55,7 @@ def test_reddit_provider_fetches_feed_with_requests_and_user_agent(monkeypatch):
     )
 
     provider = reddit.RedditHeadlineStoryProvider("/r/news", limit=3)
-    stories = provider.get_stories(limit=2)
+    stories = provider.get_stories()
 
     assert seen["url"] == "https://www.reddit.com/r/news.rss"
     assert seen["timeout"] == 20
@@ -92,7 +92,7 @@ def test_reddit_provider_filters_old_entries(monkeypatch):
     )
 
     provider = reddit.RedditHeadlineStoryProvider("news", since_days_ago=30)
-    stories = provider.get_stories(limit=5)
+    stories = provider.get_stories()
 
     assert len(stories) == 1
     assert stories[0].plain_text() == "Recent story"
