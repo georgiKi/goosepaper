@@ -240,6 +240,42 @@ RSS `body_source` modes:
 
 Bluesky sources use Bluesky's unauthenticated public AppView endpoints.
 
+### Readwise Reader
+
+```json
+{
+    "type": "readwise",
+    "token_env": "READWISE_TOKEN",
+    "location": "later",
+    "category": "article",
+    "tags": ["morning"],
+    "limit": 5,
+    "body_source": "text"
+}
+```
+
+| Field | Type | Default | Description |
+| ----- | ---- | ------- | ----------- |
+| `token_env` | str | `"READWISE_TOKEN"` | Environment variable containing the Readwise access token. |
+| `limit` | int | `5` | Number of Reader documents to fetch. |
+| `since_days_ago` | number | `null` | If provided, fetch Reader documents updated recently. |
+| `location` | str or null | `"later"` | One of `"new"`, `"later"`, `"shortlist"`, `"archive"`, or `"feed"`. Set `null` to omit this filter. |
+| `category` | str or null | `"article"` | One of `"article"`, `"email"`, `"rss"`, `"highlight"`, `"note"`, `"pdf"`, `"epub"`, `"tweet"`, or `"video"`. Set `null` to omit this filter. |
+| `tags` | list[str] | `[]` | Reader tags to require. Readwise matches documents that have all listed tags. |
+| `body_source` | str | `"text"` | One of `"text"`, `"html"`, or `"summary"`. |
+
+Readwise `body_source` modes:
+
+- `text`: fetch Reader HTML content, extract readable text blocks with BeautifulSoup, and let Goosepaper handle the page layout
+- `html`: fetch Reader HTML content and pass cleaned HTML through to Goosepaper
+- `summary`: render only the Reader summary and do not request full HTML content
+
+Set the token before running Goosepaper:
+
+```shell
+export READWISE_TOKEN="..."
+```
+
 ### Weather
 
 ```json

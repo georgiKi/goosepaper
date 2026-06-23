@@ -82,6 +82,31 @@ def test_construct_story_providers_supports_bluesky():
     assert stories[0].feed_filter == "posts_no_replies"
 
 
+def test_construct_story_providers_supports_readwise(monkeypatch):
+    monkeypatch.setenv("GOOSEPAPER_TEST_READWISE_TOKEN", "test-token")
+
+    stories = construct_story_providers_from_source_configs(
+        [
+            {
+                "type": "readwise",
+                "token_env": "GOOSEPAPER_TEST_READWISE_TOKEN",
+                "limit": 3,
+                "location": "new",
+                "category": "rss",
+                "tags": ["daily"],
+                "body_source": "text",
+            }
+        ]
+    )
+
+    assert stories[0].token == "test-token"
+    assert stories[0].limit == 3
+    assert stories[0].location == "new"
+    assert stories[0].category == "rss"
+    assert stories[0].tags == ["daily"]
+    assert stories[0].body_source == "text"
+
+
 def test_construct_story_providers_passes_weather_breakdown_options():
     stories = construct_story_providers_from_source_configs(
         [

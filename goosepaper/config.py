@@ -595,6 +595,18 @@ def _source_schema(source_type: str) -> Dict[str, Any]:
             "required": {"username"},
             "optional": {"limit", "since_days_ago", "include_replies"},
         },
+        "readwise": {
+            "required": set(),
+            "optional": {
+                "token_env",
+                "limit",
+                "since_days_ago",
+                "location",
+                "category",
+                "tags",
+                "body_source",
+            },
+        },
         "weather": {
             "required": {"lat", "lon"},
             "optional": {
@@ -637,8 +649,14 @@ def _validate_source_options(source_type: str, options: Dict[str, Any], index: i
         "since_days_ago": lambda value: _validate_number(
             value, f"source #{index} since_days_ago"
         ),
+        "token_env": lambda value: _validate_string(
+            value, f"source #{index} token_env"
+        ),
+        "location": lambda value: _validate_readwise_location(value, index),
+        "category": lambda value: _validate_readwise_category(value, index),
+        "tags": lambda value: _validate_string_list(value, f"source #{index} tags"),
         "byline": lambda value: _validate_rss_byline(value, index),
-        "body_source": lambda value: _validate_rss_body_source(value, index),
+        "body_source": lambda value: _validate_body_source(source_type, value, index),
         "include_replies": lambda value: _validate_bool(
             value, f"source #{index} include_replies"
         ),
@@ -690,6 +708,13 @@ def _validate_number(value: Any, context: str):
         raise ConfigError(f"{context} must be a number.")
 
 
+def _validate_string_list(value: Any, context: str):
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item for item in value
+    ):
+        raise ConfigError(f"{context} must be an array of non-empty strings.")
+
+
 def _validate_bool(value: Any, context: str):
     if not isinstance(value, bool):
         raise ConfigError(f"{context} must be true or false.")
@@ -723,11 +748,62 @@ def _validate_rss_byline(value: Any, index: int):
         )
 
 
+def _validate_body_source(source_type: str, value: Any, index: int):
+    if source_type == "rss":
+        _validate_rss_body_source(value, index)
+        return
+    if source_type == "readwise":
+        _validate_readwise_body_source(value, index)
+        return
+    raise ConfigError(
+        f"source #{index} body_source is not supported for {source_type}."
+    )
+
+
 def _validate_rss_body_source(value: Any, index: int):
     if value not in {"auto", "content", "summary", "article"}:
         raise ConfigError(
             f'source #{index} body_source must be one of "auto", '
             '"content", "summary", or "article".'
+        )
+
+
+def _validate_readwise_body_source(value: Any, index: int):
+    if value not in {"text", "html", "summary"}:
+        raise ConfigError(
+            f'source #{index} body_source must be one of '
+            '"text", "html", or "summary".'
+        )
+
+
+def _validate_readwise_location(value: Any, index: int):
+    if value is None:
+        return
+    if value not in {"new", "later", "shortlist", "archive", "feed"}:
+        raise ConfigError(
+            f'source #{index} location must be one of "new", "later", '
+            '"shortlist", "archive", "feed", or null.'
+        )
+
+
+def _validate_readwise_category(value: Any, index: int):
+    if value is None:
+        return
+    if value not in {
+        "article",
+        "email",
+        "rss",
+        "highlight",
+        "note",
+        "pdf",
+        "epub",
+        "tweet",
+        "video",
+    }:
+        raise ConfigError(
+            f'source #{index} category must be one of '
+            '"article", "email", "rss", "highlight", "note", "pdf", '
+            '"epub", "tweet", "video", or null.'
         )
 
 
